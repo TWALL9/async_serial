@@ -14,7 +14,7 @@ SerialPort::SerialPort(
     const std::string& port,
     uint32_t baud_rate
 )
-: io_service_(), serial_(io_service_), port_(port), baud_rate_(baud_rate)
+: io_service_(new boost::asio::io_service()), serial_(*io_service_), port_(port), baud_rate_(baud_rate)
 {
   rx_buf_.resize(BUF_SIZE);
 }
@@ -24,6 +24,10 @@ SerialPort::~SerialPort()
   if (isOpen())
   {
     close();
+  }
+  if (thread_.joinable())
+  {
+    thread_.join();
   }
 }
 
@@ -35,7 +39,8 @@ bool SerialPort::isOpen() const
 bool SerialPort::open()
 {
   serial_.open(port_);
-  return serial_.is_open();
+  serial_.set_option(boost::asio::serial_port_base::baud_rate(baud_rate_));
+  return isOpen();
 }
 
 void SerialPort::close()
@@ -46,7 +51,7 @@ void SerialPort::close()
   }
   catch (const boost::system::system_error& e)
   {
-    RCLCPP_ERROR_STREAM(rclcpp::get_logger("SerialPort::close"), e.what());
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger("SerialPort::close"), "closing port: " << e.what());
   }
 }
 
@@ -68,7 +73,7 @@ void SerialPort::asyncSend(const std::vector<uint8_t>& buf)
 
 void SerialPort::addReceiveCallback(SerialCallback fn)
 {
-  func_ = std::move(fn);
+  func_ = fn;
   serial_.async_read_some(
     boost::asio::buffer(rx_buf_),
     [this](boost::system::error_code error, size_t bytes_transferred)
@@ -76,6 +81,12 @@ void SerialPort::addReceiveCallback(SerialCallback fn)
       asyncReceiveHandler(error, bytes_transferred);
     }
   );
+  std::thread t {
+    [this]() {
+      io_service_->run();
+    }
+  };
+  thread_.swap(t);
 }
 
 void SerialPort::asyncSendHandler(const boost::system::error_code& err, size_t bytes_transferred)
@@ -100,12 +111,12 @@ void SerialPort::asyncReceiveHandler(const boost::system::error_code& err, size_
   if (bytes_received > 0 && func_)
   {
     func_(rx_buf_, bytes_received);
-    serial_.async_write_some(
+    serial_.async_read_some(
       boost::asio::buffer(rx_buf_),
       [this](boost::system::error_code error, size_t bytes_transferred)
       {
         asyncReceiveHandler(error, bytes_transferred);
-      } 
+      }
     );
   }
 }

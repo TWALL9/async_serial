@@ -38,12 +38,13 @@ private:
   void asyncSendHandler(const boost::system::error_code& err, size_t bytes_transferred);
   void asyncReceiveHandler(const boost::system::error_code& err, size_t bytes_received);
 
-  boost::asio::io_service io_service_;
+  std::shared_ptr<boost::asio::io_service> io_service_;
   boost::asio::serial_port serial_;
   std::string port_;
   uint32_t baud_rate_;
   std::vector<uint8_t> rx_buf_;
   SerialCallback func_;
+  std::thread thread_;
   static constexpr size_t BUF_SIZE {2048};
 };
 

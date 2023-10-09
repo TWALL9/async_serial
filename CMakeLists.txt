@@ -18,6 +18,7 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system)
 
 add_library(
@@ -33,6 +34,11 @@ ament_export_dependencies(Boost)
 ament_target_dependencies(${PROJECT_NAME} rclcpp Boost)
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 
+add_executable(demo_node src/demo_node.cpp)
+ament_target_dependencies(demo_node rclcpp std_msgs Boost)
+target_link_libraries(demo_node ${PROJECT_NAME})
+
+
 install(
   TARGETS ${PROJECT_NAME}
   EXPORT ${PROJECT_NAME}
@@ -41,6 +47,8 @@ install(
   INCLUDES DESTINATION include
   RUNTIME DESTINATION bin
 )
+
+install(TARGETS demo_node DESTINATION lib/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
