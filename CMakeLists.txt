@@ -27,7 +27,13 @@ add_library(
   src/serial_port.cpp
 )
 
-include_directories(include ${Boost_INCLUDE_DIRS})
+# include_directories(include ${Boost_INCLUDE_DIRS})
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${Boost_INCLUDE_DIRS}
+)
 
 ament_export_targets(${PROJECT_NAME} HAS_LIBRARY_TARGET)
 ament_export_dependencies(Boost)
@@ -44,8 +50,12 @@ install(
   EXPORT ${PROJECT_NAME}
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
-  INCLUDES DESTINATION include
   RUNTIME DESTINATION bin
+)
+
+install(
+  DIRECTORY include/
+  DESTINATION include
 )
 
 install(TARGETS demo_node DESTINATION lib/${PROJECT_NAME})
