@@ -22,6 +22,19 @@ find_package(std_msgs REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system)
 
 add_library(
+  ${PROJECT_NAME}_kiss
+  SHARED
+  src/kiss_serial/kiss_decode.cpp
+  src/kiss_serial/kiss_encode.cpp
+)
+
+target_include_directories(
+  ${PROJECT_NAME}_kiss
+  PRIVATE
+  include
+)
+
+add_library(
   ${PROJECT_NAME}
   SHARED
   src/serial_port.cpp
@@ -46,7 +59,7 @@ target_link_libraries(demo_node ${PROJECT_NAME})
 
 
 install(
-  TARGETS ${PROJECT_NAME}
+  TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_kiss
   EXPORT ${PROJECT_NAME}
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
@@ -70,5 +83,9 @@ if(BUILD_TESTING)
   #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+ament_export_libraries(
+  ${PROJECT_NAME}_kiss
+)
 
 ament_package()
