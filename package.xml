@@ -3,9 +3,9 @@
 <package format="3">
   <name>async_serial</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="thomaswallis0@gmail.com">tom</maintainer>
-  <license>TODO: License declaration</license>
+  <description>Async serial driver through ASIO</description>
+  <maintainer email="thomaswallis0@gmail.com">Tom Wallis</maintainer>
+  <license>GPL</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
