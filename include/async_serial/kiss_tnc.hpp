@@ -3,8 +3,7 @@
 #include <vector>
 #include <stdint.h>
 
-namespace async_serial
-{
+namespace async_serial {
 
 static constexpr uint8_t FEND = 0xC0;
 static constexpr uint8_t FESC = 0xDB;
@@ -18,29 +17,27 @@ static constexpr int ESCAPE_ERROR = -4;
 static constexpr int STILL_ERROR = -5;
 static constexpr int IN_PROGRESS = -6;
 
-class KissOutputStream
-{
+class KissOutputStream {
 public:
   KissOutputStream();
   ~KissOutputStream() = default;
 
   void init();
-  void addByte(const uint8_t b);
-  std::vector<uint8_t> getBuffer();
+  void add_byte(const uint8_t b);
+  std::vector<uint8_t> get_buffer();
 
 private:
   std::vector<uint8_t> buf_;
 };
 
-class KissInputStream
-{
+class KissInputStream {
 public:
   KissInputStream();
   ~KissInputStream() = default;
   void init();
-  int addByte(const uint8_t b);
-  bool isReady();
-  std::vector<uint8_t> getBuffer(int& error, uint8_t& port);
+  int add_byte(const uint8_t b);
+  bool is_ready();
+  std::vector<uint8_t> get_buffer(int& error, uint8_t& port);
 
 private:
   enum class KissDecodeState

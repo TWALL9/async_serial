@@ -1,22 +1,18 @@
 #include "async_serial/kiss_tnc.hpp"
 
-namespace async_serial
-{
+namespace async_serial {
 
-KissOutputStream::KissOutputStream()
-{
+KissOutputStream::KissOutputStream() {
   init();
 }
 
-void KissOutputStream::init()
-{
+void KissOutputStream::init() {
   buf_.clear();
   buf_.push_back(FEND);
   buf_.push_back(0);
 }
 
-void KissOutputStream::addByte(const uint8_t b)
-{
+void KissOutputStream::add_byte(const uint8_t b) {
   switch (b)
   {
     case (FEND):
@@ -33,8 +29,7 @@ void KissOutputStream::addByte(const uint8_t b)
   }
 }
 
-std::vector<uint8_t> KissOutputStream::getBuffer()
-{
+std::vector<uint8_t> KissOutputStream::get_buffer() {
   std::vector<uint8_t> out(buf_);
   out.push_back(FEND);
   return out;

@@ -5,14 +5,12 @@
 #include <string>
 #include <vector>
 
-namespace async_serial
-{
+namespace async_serial {
 
 using SerialCallback = std::function<void (std::vector<uint8_t> &, const size_t &)>;
 using boost_serial = boost::asio::serial_port_base;
 
-class SerialPort
-{
+class SerialPort {
 
 public:
   // SerialPort();
@@ -27,16 +25,16 @@ public:
   bool open();
   void close();
 
-  bool isOpen() const;
+  bool is_open() const;
 
   size_t send(const std::vector<uint8_t>& buf);
-  void asyncSend(const std::vector<uint8_t>& buf);
+  void async_send(const std::vector<uint8_t>& buf);
 
-  void addReceiveCallback(SerialCallback fn);
+  void add_receive_callback(SerialCallback fn);
 
 private:
-  void asyncSendHandler(const boost::system::error_code& err, size_t bytes_transferred);
-  void asyncReceiveHandler(const boost::system::error_code& err, size_t bytes_received);
+  void async_send_handler(const boost::system::error_code& err, size_t bytes_transferred);
+  void async_receive_handler(const boost::system::error_code& err, size_t bytes_received);
 
   std::shared_ptr<boost::asio::io_service> io_service_;
   boost::asio::serial_port serial_;
