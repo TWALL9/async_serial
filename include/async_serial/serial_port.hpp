@@ -13,7 +13,7 @@ using boost_serial = boost::asio::serial_port_base;
 class SerialPort {
 
 public:
-  // SerialPort();
+  SerialPort() = default;
 
   SerialPort(
     const std::string& port,
