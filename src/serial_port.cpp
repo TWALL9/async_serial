@@ -31,8 +31,14 @@ bool SerialPort::is_open() const {
 }
 
 bool SerialPort::open() {
-  serial_.open(port_);
-  serial_.set_option(boost::asio::serial_port_base::baud_rate(baud_rate_));
+  try {
+    serial_.open(port_);
+    serial_.set_option(boost::asio::serial_port_base::baud_rate(baud_rate_));
+  }
+  catch (const boost::system::system_error& e) {
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger("SerialPort::open"), "cannot open port " << port_ << ": " << e.what());
+    return false;
+  }
   return is_open();
 }
 
@@ -40,9 +46,8 @@ void SerialPort::close() {
   try {
     serial_.close();
   }
-  catch (const boost::system::system_error& e)
-  {
-    RCLCPP_ERROR_STREAM(rclcpp::get_logger("SerialPort::close"), "closing port: " << e.what());
+  catch (const boost::system::system_error& e) {
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger("SerialPort::close"), "cannot close port" << port_ << ": " << e.what());
   }
 }
 
